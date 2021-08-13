@@ -1,0 +1,138 @@
+<div class="col-sm-9 col-md-10 col-sm-push-3 col-md-push-2">
+    <ol class="breadcrumb">
+        <li><a href="#/realms/{{realm.realm}}/identity-provider-settings">{{:: 'identity-providers' | translate}}</a>
+        </li>
+        <li data-ng-hide="newIdentityProvider">{{provider.name}}</li>
+        <li data-ng-show="newIdentityProvider">{{:: 'add-identity-provider' | translate}}</li>
+    </ol>
+
+    <kc-tabs-identity-provider></kc-tabs-identity-provider>
+
+    <form class="form-horizontal" kc-read-only="!access.manageIdentityProviders" name="realmForm" novalidate>
+        <fieldset>
+            <div class="form-group clearfix">
+                <label class="col-md-2 control-label" for="redirectUri">{{:: 'redirect-uri' | translate}}</label>
+                <div class="col-sm-6">
+                    <input class="form-control" id="redirectUri" kc-select-action="click" readonly type="text" value="{{callbackUrl}}{{identityProvider.alias}}/endpoint">
+                </div>
+                <kc-tooltip>{{:: 'redirect-uri.tooltip' | translate}}</kc-tooltip>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="form-group clearfix">
+                <label class="col-md-2 control-label" for="corpId"><span class="required">*</span> {{:: 'CorpId' | translate}}</label>
+                <div class="col-md-6">
+                    <input class="form-control" id="corpId" ng-model="identityProvider.config.corpId" required type="text">
+                </div>
+                <kc-tooltip>{{:: 'wechat-enterprise.client-id.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-md-2 control-label" for="clientId"><span class="required">*</span> {{:: 'AgentId' | translate}}</label>
+                <div class="col-md-6">
+                    <input class="form-control" id="clientId" ng-model="identityProvider.config.clientId" required type="text">
+                </div>
+                <kc-tooltip>{{:: 'wechat-enterprise.agent-id.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-md-2 control-label" for="clientSecret"><span class="required">*</span> {{:: 'Secret' | translate}}</label>
+                <div class="col-md-6">
+                    <input class="form-control" id="clientSecret" kc-password ng-model="identityProvider.config.clientSecret" required>
+                </div>
+                <kc-tooltip>{{:: 'wechat-enterprise.client-secret.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-md-2 control-label" for="defaultScope">{{:: 'default-scopes' | translate}} </label>
+                <div class="col-md-6">
+                    <input class="form-control" id="defaultScope" ng-model="identityProvider.config.defaultScope" type="text">
+                </div>
+                <kc-tooltip>{{:: 'wechat-enterprise.default-scopes.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="storeToken">{{:: 'store-tokens' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="storeToken" ng-model="identityProvider.storeToken" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitch/>
+                </div>
+                <kc-tooltip>{{:: 'identity-provider.store-tokens.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="storedTokensReadable">{{:: 'stored-tokens-readable' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="storedTokensReadable" ng-model="identityProvider.addReadTokenRoleOnCreate" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitch/>
+                </div>
+                <kc-tooltip>{{:: 'identity-provider.stored-tokens-readable.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="enabled">{{:: 'enabled' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="enabled" ng-model="identityProvider.enabled" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitch/>
+                </div>
+                <kc-tooltip>{{:: 'identity-provider.enabled.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="disableUserInfo">{{:: 'disableUserInfo' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="disableUserInfo" ng-model="identityProvider.config.disableUserInfo" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitchvalue/>
+                </div>
+                <kc-tooltip>{{:: 'identity-provider.disableUserInfo.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="trustEmail">{{:: 'trust-email' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="trustEmail" name="identityProvider.trustEmail" ng-model="identityProvider.trustEmail" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitch/>
+                </div>
+                <kc-tooltip>{{:: 'trust-email.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="linkOnly">{{:: 'link-only' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="linkOnly" name="identityProvider.trustEmail" ng-model="identityProvider.linkOnly" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitch/>
+                </div>
+                <kc-tooltip>{{:: 'link-only.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="hideOnLoginPage">{{:: 'hide-on-login-page' | translate}}</label>
+                <div class="col-md-6">
+                    <input id="hideOnLoginPage" name="identityProvider.config.hideOnLoginPage" ng-model="identityProvider.config.hideOnLoginPage" off-text="{{:: 'offText' | translate}}" on-text="{{:: 'onText' | translate}}" onoffswitchvalue/>
+                </div>
+                <kc-tooltip>{{:: 'hide-on-login-page.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="guiOrder">{{:: 'gui-order' | translate}}</label>
+                <div class="col-md-6">
+                    <input class="form-control" id="guiOrder" ng-model="identityProvider.config.guiOrder" type="text">
+                </div>
+                <kc-tooltip>{{:: 'gui-order.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="firstBrokerLoginFlowAlias">{{:: 'first-broker-login-flow' | translate}}</label>
+                <div class="col-md-6">
+                    <div>
+                        <select class="form-control" id="firstBrokerLoginFlowAlias"
+                                ng-model="identityProvider.firstBrokerLoginFlowAlias"
+                                ng-options="flow.alias as flow.alias for flow in authFlows"
+                                required> </select>
+                    </div>
+                </div>
+                <kc-tooltip>{{:: 'first-broker-login-flow.tooltip' | translate}}</kc-tooltip>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="postBrokerLoginFlowAlias">{{:: 'post-broker-login-flow' | translate}}</label>
+                <div class="col-md-6">
+                    <div>
+                        <select class="form-control" id="postBrokerLoginFlowAlias"
+                                ng-model="identityProvider.postBrokerLoginFlowAlias"
+                                ng-options="flow.alias as flow.alias for flow in postBrokerAuthFlows"> </select>
+                    </div>
+                </div>
+                <kc-tooltip>{{:: 'post-broker-login-flow.tooltip' | translate}}</kc-tooltip>
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            <div class="col-md-10 col-md-offset-2">
+                <button data-ng-disabled="!changed" kc-save>{{:: 'save' | translate}}</button>
+                <button data-ng-click="cancel()" data-ng-disabled="!changed" kc-cancel>{{:: 'cancel' | translate}}</button>
+            </div>
+        </div>
+    </form>
+</div>

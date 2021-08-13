@@ -1,0 +1,19 @@
+*/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Generated sources ###
+/src/generated/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+##logs
+*.log
+/*/logs
+
+# Ignore Gradle
+.gradle
+build
