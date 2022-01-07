@@ -1,0 +1,5 @@
+org.keycloak.spi.authenticator.email.EmailAuthenticatorFactory
+org.keycloak.spi.authenticator.phone.PhoneAuthenticatorFactory
+org.keycloak.spi.authenticator.wechat.WechatAuthenticatorFactory
+org.keycloak.spi.authenticator.username.UsernameAuthenticatorFactory
+org.keycloak.spi.authenticator.password.PasswordAuthenticatorFactory

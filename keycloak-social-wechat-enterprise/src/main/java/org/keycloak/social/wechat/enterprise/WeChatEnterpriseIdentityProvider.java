@@ -36,6 +36,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type We chat enterprise identity provider.
+ *
+ * @author yaoguoh
+ */
 public class WeChatEnterpriseIdentityProvider extends AbstractOAuth2IdentityProvider<WeChatEnterpriseProviderConfig>
         implements SocialIdentityProvider<WeChatEnterpriseProviderConfig> {
 
@@ -226,6 +231,9 @@ public class WeChatEnterpriseIdentityProvider extends AbstractOAuth2IdentityProv
         return new Endpoint(callback, realm, event);
     }
 
+    /**
+     * The type Endpoint.
+     */
     protected class Endpoint {
         protected AuthenticationCallback callback;
         protected RealmModel             realm;

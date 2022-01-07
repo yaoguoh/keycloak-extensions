@@ -6,9 +6,17 @@ import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.KeycloakSession;
 
 
+/**
+ * The type We chat enterprise identity provider factory.
+ *
+ * @author yaoguoh
+ */
 public class WeChatEnterpriseIdentityProviderFactory extends AbstractIdentityProviderFactory<WeChatEnterpriseIdentityProvider>
         implements SocialIdentityProviderFactory<WeChatEnterpriseIdentityProvider> {
 
+    /**
+     * The constant PROVIDER_ID.
+     */
     public static final String PROVIDER_ID = "wechat-enterprise";
 
     @Override

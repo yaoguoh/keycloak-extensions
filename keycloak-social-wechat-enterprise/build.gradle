@@ -1,0 +1,5 @@
+description = "keycloak-social-wechat-enterprise"
+
+dependencies {
+    implementation "org.keycloak:keycloak-themes:${ver.keycloak}"
+}

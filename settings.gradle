@@ -1,0 +1,5 @@
+rootProject.name = 'keycloak-extensions'
+include(':keycloak-login-spi')
+include(':keycloak-social-wechat-enterprise')
+
+

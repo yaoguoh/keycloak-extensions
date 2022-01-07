@@ -9,18 +9,19 @@ import org.keycloak.models.UserModel;
 
 /**
  * User attribute mapper.
+ *
+ * @author yaoguoh
  */
-
 public class WeChatEnterpriseUserAttributeMapper extends AbstractJsonUserAttributeMapper {
     private static final String   PROFILE_MOBILE = WeChatEnterpriseIdentityProvider.PROFILE_MOBILE;
     private static final String   PROFILE_GENDER = WeChatEnterpriseIdentityProvider.PROFILE_GENDER;
     private static final String   PROFILE_STATUS = WeChatEnterpriseIdentityProvider.PROFILE_STATUS;
     private static final String   PROFILE_ENABLE = WeChatEnterpriseIdentityProvider.PROFILE_ENABLE;
-    private static final String[] cp             = new String[]{WeChatEnterpriseIdentityProviderFactory.PROVIDER_ID};
+    private static final String[] CP             = new String[]{WeChatEnterpriseIdentityProviderFactory.PROVIDER_ID};
 
     @Override
     public String[] getCompatibleProviders() {
-        return cp;
+        return CP;
     }
 
     @Override
