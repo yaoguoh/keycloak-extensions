@@ -20,9 +20,9 @@
 
 ## 模块说明
 
-### keycloak-login-spi （Oauth Password 方式扩展）
+### keycloak-login-spi （OAuth Password Extensions）
 
-### keycloak-social-wechat-enterprise （Keycloak Identity Providers 扩展）
+### keycloak-social-wechat-enterprise （Keycloak Identity Providers Extensions）
 
 ## Docker
 
