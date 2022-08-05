@@ -21,7 +21,7 @@
 ### 一、`Docker`运行`keycloak server`
 
 ```text
-keycloak.version : 16.1.0
+keycloak.version : 16.1.1
 
 docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password jboss/keycloak
 ```
@@ -30,8 +30,8 @@ docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password jbo
 
 ```shell
 :keycloak-login-spi:shadowJar
-# keycloak-login-spi-16.1.0-all.jar 传到 `/opt/jboss/keycloak/standalone/deployments` 目录
-curl -s -k -L --output keycloak-login-spi-16.1.0-all.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/16.1.0/keycloak-login-spi-16.1.0-all.jar
+# keycloak-login-spi-16.1.1-all.jar 传到 `/opt/jboss/keycloak/standalone/deployments` 目录
+curl -s -k -L --output keycloak-login-spi-16.1.1-all.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/16.1.1/keycloak-login-spi-16.1.1-all.jar
 ```
 
 ### 三、创建 Authentication Flow

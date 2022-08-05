@@ -7,6 +7,8 @@ import org.keycloak.spi.authenticator.base.BaseAuthenticator;
 import org.keycloak.spi.authenticator.enums.AuthenticationErrorEnum;
 import org.keycloak.spi.authenticator.exception.AuthenticationException;
 
+import java.util.Optional;
+
 /**
  * The type Username authenticator.
  *
@@ -23,12 +25,9 @@ public class UsernameAuthenticator extends BaseAuthenticator {
             throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "用户名不能为空");
         }
         // 通过用户名查询用户
-        final UserModel userModel = context.getSession().userStorageManager().getUserByUsername(context.getRealm(), username);
-        if (userModel != null) {
-            context.setUser(userModel);
-            context.success();
-        } else {
-            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, "用户名", username);
-        }
+        Optional<UserModel> optional  = Optional.of(context.getSession().userStorageManager().getUserByUsername(context.getRealm(), username));
+        UserModel           userModel = super.validateUser("用户名", username, optional);
+        context.setUser(userModel);
+        context.success();
     }
 }

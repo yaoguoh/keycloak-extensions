@@ -31,6 +31,12 @@ public enum AuthenticationErrorEnum {
             "2001", "未查询到用户: %s[%s]", "未查询到用户"),
 
     /**
+     * User disabled error authentication error enum.
+     */
+    USER_DISABLED_ERROR(HttpStatus.SC_UNAUTHORIZED, AuthenticationFlowError.USER_DISABLED,
+            "2002", "用户已禁用: %s[%s]", "用户已禁用"),
+
+    /**
      * Password invalid error authentication error.
      */
     PASSWORD_INVALID_ERROR(HttpStatus.SC_UNAUTHORIZED, AuthenticationFlowError.INVALID_CREDENTIALS,

@@ -15,7 +15,6 @@ import org.keycloak.spi.authenticator.exception.AuthenticationException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * The type Phone authenticator.
@@ -28,7 +27,6 @@ public class PhoneAuthenticator extends BaseAuthenticator {
     public void doAuthenticate(AuthenticationFlowContext context) {
         final String phone = super.getRequestParameter(context, PhoneAuthenticatorFactory.PROPERTY_FORM_PHONE);
         final String code  = super.getRequestParameter(context, PhoneAuthenticatorFactory.PROPERTY_FORM_CODE);
-
         // 参数校验
         if (StringUtils.isEmpty(phone)) {
             throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "手机号不能为空!");
@@ -37,14 +35,13 @@ public class PhoneAuthenticator extends BaseAuthenticator {
             throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "验证码不能为空!");
         }
         // 使用手机号查询用户
-        final Stream<UserModel> userModelStream = context.getSession().userStorageManager().searchForUserByUserAttributeStream(
-                context.getRealm(),
-                super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_USER_ATTRIBUTE_PHONE),
-                phone);
-        final Optional<UserModel> optional = userModelStream.findFirst();
-        final UserModel userModel = optional.orElseThrow(() -> {
-            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, "手机号", phone);
-        });
+        Optional<UserModel> optional = context.getSession().userStorageManager()
+                .searchForUserByUserAttributeStream(
+                        context.getRealm(),
+                        super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_USER_ATTRIBUTE_PHONE),
+                        phone)
+                .findFirst();
+        UserModel userModel = super.validateUser("手机号", phone, optional);
         try {
             this.doSmsAuthenticate(context, phone, code);
         } catch (IOException e) {
@@ -55,25 +52,25 @@ public class PhoneAuthenticator extends BaseAuthenticator {
     }
 
     private void doSmsAuthenticate(AuthenticationFlowContext context, String phone, String code) throws IOException {
-        final String requestUrl         = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_URL);
-        final String requestContentType = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_CONTENT_TYPE);
+        String requestUrl         = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_URL);
+        String requestContentType = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_CONTENT_TYPE);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            final Map<String, Object> requestParam = this.buildRequestParam(context, phone, code);
+            Map<String, Object> requestParam = this.buildRequestParam(context, phone, code);
             // 发送校验请求
-            final HttpResponse response = super.codeAuthenticateExecute(httpClient, requestUrl, requestContentType, requestParam);
+            HttpResponse response = super.codeAuthenticateExecute(httpClient, requestUrl, requestContentType, requestParam);
             // 校验返回结果
-            final String checkKey   = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_RESPONSE_CHECK_KEY);
-            final String checkValue = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_RESPONSE_CHECK_VALUE);
+            String checkKey   = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_RESPONSE_CHECK_KEY);
+            String checkValue = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_RESPONSE_CHECK_VALUE);
             super.codeAuthenticateValidate(response, checkKey, checkValue);
         }
     }
 
     private Map<String, Object> buildRequestParam(AuthenticationFlowContext context, String phone, String code) {
-        final String requestParamDefault = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_DEFAULT);
-        final String requestParamPhone   = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_PHONE);
-        final String requestParamCode    = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_CODE);
+        String requestParamDefault = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_DEFAULT);
+        String requestParamPhone   = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_PHONE);
+        String requestParamCode    = super.getPropertyValue(context, PhoneAuthenticatorFactory.PROPERTY_SMS_REQUEST_PARAM_CODE);
 
-        final Map<String, Object> requestParam = JSONUtil.parseObj(requestParamDefault);
+        Map<String, Object> requestParam = JSONUtil.parseObj(requestParamDefault);
         requestParam.put(requestParamPhone, phone);
         requestParam.put(requestParamCode, code);
 

@@ -8,6 +8,8 @@ import org.keycloak.spi.authenticator.base.BaseAuthenticator;
 import org.keycloak.spi.authenticator.enums.AuthenticationErrorEnum;
 import org.keycloak.spi.authenticator.exception.AuthenticationException;
 
+import java.util.Optional;
+
 /**
  * The type Password authenticator.
  *
@@ -27,19 +29,15 @@ public class PasswordAuthenticator extends BaseAuthenticator {
         if (StringUtils.isEmpty(password)) {
             throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "密码不能为空");
         }
-
         // 通过用户名查询用户
-        final UserModel userModel = context.getSession().userStorageManager().getUserByUsername(context.getRealm(), username);
-        if (userModel != null) {
-            boolean isValid = context.getSession().userCredentialManager().isValid(context.getRealm(), userModel, UserCredentialModel.password(password));
-            if (isValid) {
-                context.setUser(userModel);
-                context.success();
-            } else {
-                throw new AuthenticationException(AuthenticationErrorEnum.PASSWORD_INVALID_ERROR);
-            }
-        } else {
-            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, "用户名", username);
+        Optional<UserModel> optional  = Optional.of(context.getSession().userStorageManager().getUserByUsername(context.getRealm(), username));
+        UserModel           userModel = super.validateUser("用户名", username, optional);
+        // 校验密码
+        boolean isValid = context.getSession().userCredentialManager().isValid(context.getRealm(), userModel, UserCredentialModel.password(password));
+        if (!isValid) {
+            throw new AuthenticationException(AuthenticationErrorEnum.PASSWORD_INVALID_ERROR);
         }
+        context.setUser(userModel);
+        context.success();
     }
 }

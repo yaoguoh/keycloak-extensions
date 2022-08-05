@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type Base authenticator.
@@ -184,6 +185,24 @@ public abstract class BaseAuthenticator implements Authenticator {
     protected Response getErrorResponse(int status, String error, String errorDescription) {
         OAuth2ErrorRepresentation errorRep = new OAuth2ErrorRepresentation(error, errorDescription);
         return Response.status(status).entity(errorRep).type(MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    /**
+     * Validate user user model.
+     *
+     * @param identifierName the identifier name
+     * @param identifier     the identifier
+     * @param optional       the optional
+     * @return the user model
+     */
+    protected UserModel validateUser(String identifierName, String identifier, Optional<UserModel> optional) {
+        UserModel userModel = optional.orElseThrow(() -> {
+            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, identifierName, identifier);
+        });
+        if (!userModel.isEnabled()) {
+            throw new AuthenticationException(AuthenticationErrorEnum.USER_DISABLED_ERROR, identifierName, identifier);
+        }
+        return userModel;
     }
 
     @Override
