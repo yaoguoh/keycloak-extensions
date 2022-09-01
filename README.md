@@ -27,5 +27,5 @@
 ## Docker
 
 - 持久化目录
-  - `ear` path `/opt/jboss/keycloak/standalone/deployments`
-  - `themes-html` path `/opt/jboss/keycloak/themes/base/admin/resources/partials`
+    - `ear` path `/opt/keycloak/providers`
+    - `themes-html` path `/opt/keycloak/themes/base/admin/resources/partials`

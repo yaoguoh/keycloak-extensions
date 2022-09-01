@@ -1,38 +1,30 @@
 package org.keycloak.spi.authenticator.base;
 
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.ContentType;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.Setter;
-import lombok.extern.jbosslog.JBossLog;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.*;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.authentication.authenticators.client.ClientAuthUtil;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.keycloak.spi.authenticator.enums.AuthenticationErrorEnum;
 import org.keycloak.spi.authenticator.enums.LoginTypeEnum;
 import org.keycloak.spi.authenticator.exception.AuthenticationException;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * The type Base authenticator.
@@ -40,18 +32,29 @@ import java.util.Optional;
  * @author yaoguoh
  */
 @Setter
-@JBossLog
+@Slf4j
 public abstract class BaseAuthenticator implements Authenticator {
 
-    public static final String          PROPERTY_LOGIN_TYPE = "login_type";
-    protected           KeycloakSession session;
-    protected           LoginTypeEnum   loginType;
+    /**
+     * The constant PROPERTY_LOGIN_TYPE.
+     */
+    public static final String PROPERTY_LOGIN_TYPE = "login_type";
+
+    /**
+     * The Session.
+     */
+    protected KeycloakSession session;
+    /**
+     * The Login type.
+     */
+    protected LoginTypeEnum   loginType;
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
         try {
             MultivaluedMap<String, String> formParameters = context.getHttpRequest().getDecodedFormParameters();
-            String                         loginTypeCode  = formParameters.getFirst(PROPERTY_LOGIN_TYPE);
+            log.debug("Authentication flow form parameters {}", formParameters);
+            String loginTypeCode = formParameters.getFirst(PROPERTY_LOGIN_TYPE);
             // 参数校验
             if (StringUtils.isBlank(loginTypeCode)) {
                 throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "login_type can not be empty!");
@@ -62,14 +65,15 @@ public abstract class BaseAuthenticator implements Authenticator {
             if (loginType.getCode().equals(loginTypeCode)) {
                 doAuthenticate(context);
             } else {
+                log.debug("Login type code [{}] not equals {}", loginType.getCode(), loginTypeCode);
                 context.attempted();
             }
         } catch (AuthenticationException e) {
-            Response challengeResponse = this.getErrorResponse(e);
-            context.failure(e.getError().getFlowError(), challengeResponse);
-        } catch (Exception e) {
-            Response challengeResponse = this.getErrorResponse(AuthenticationErrorEnum.SYSTEM_ERROR, ExceptionUtils.getStackTrace(e));
-            context.failure(AuthenticationErrorEnum.SYSTEM_ERROR.getFlowError(), challengeResponse);
+            AuthenticationErrorEnum error = e.getError();
+            log.error(e.getLocalizedMessage(), error);
+            Response challengeResponse =
+                    ClientAuthUtil.errorResponse(error.getStatus(), error.getError(), String.format(error.getErrorDescription(), e.getArgs()));
+            context.failure(error.getFlowError(), challengeResponse);
         }
     }
 
@@ -83,27 +87,23 @@ public abstract class BaseAuthenticator implements Authenticator {
     /**
      * Code authenticate execute http response.
      *
-     * @param httpClient         the http client
-     * @param requestUrl         the request url
-     * @param requestContentType the request content type
-     * @param requestParam       the request param
-     * @return http response
-     * @throws IOException the io exception
+     * @param requestUrl   the request url
+     * @param contentType  the content type
+     * @param requestParam the request param
+     * @return the http response
      */
-    protected HttpResponse codeAuthenticateExecute(CloseableHttpClient httpClient, String requestUrl,
-                                                   String requestContentType, Map<String, Object> requestParam) throws IOException {
-        final HttpPost httpPost = new HttpPost(requestUrl);
+    protected HttpResponse codeAuthenticateExecute(String requestUrl, String contentType, Map<String, Object> requestParam) {
+        HttpRequest httpRequest = HttpRequest
+                .post(requestUrl)
+                .contentType(contentType);
         // 判断`content-type`处理请求参数
-        httpPost.addHeader(HttpHeaders.CONTENT_TYPE, requestContentType);
-        if (StringUtils.equals(requestContentType, ContentType.APPLICATION_FORM_URLENCODED.getMimeType())) {
-            final List<NameValuePair> nameValuePairList = new ArrayList<>();
-            requestParam.forEach((key, value) -> nameValuePairList.add(new BasicNameValuePair(key, value.toString())));
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairList, Consts.UTF_8));
+        if (StringUtils.equals(contentType, ContentType.FORM_URLENCODED.getValue())) {
+            requestParam.forEach(httpRequest::form);
         } else {
-            httpPost.setEntity(new StringEntity(JSONUtil.toJsonStr(requestParam)));
+            httpRequest.body(JSONUtil.toJsonStr(requestParam));
         }
-        log.debugf("HttpPost url [%s] content-type [%s] params [%s]", requestUrl, requestContentType, requestParam);
-        return httpClient.execute(httpPost);
+        log.debug("HttpPost url [{}] content-type [{}] params [{}]", requestUrl, contentType, requestParam);
+        return httpRequest.execute();
     }
 
     /**
@@ -112,15 +112,14 @@ public abstract class BaseAuthenticator implements Authenticator {
      * @param response   the response
      * @param checkKey   the check key
      * @param checkValue the check value
-     * @throws IOException the io exception
      */
-    protected void codeAuthenticateValidate(HttpResponse response, String checkKey, String checkValue) throws IOException {
-        if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode()) {
-            throw new AuthenticationException(AuthenticationErrorEnum.CODE_INVALID_ERROR, String.valueOf(response.getStatusLine().getStatusCode()));
+    protected void codeAuthenticateValidate(HttpResponse response, String checkKey, String checkValue) {
+        if (!response.isOk()) {
+            throw new AuthenticationException(AuthenticationErrorEnum.CODE_INVALID_ERROR, response.body());
         }
-        final JSONObject responseData = JSONUtil.parseObj(EntityUtils.toString(response.getEntity()));
-        log.debugf("HttpResponse Entity [%s]", responseData);
-        if (!StringUtils.equals(checkValue, responseData.getStr(checkKey))) {
+        JSONObject body = JSONUtil.parseObj(response.body());
+        log.debug("Response body [{}]", body);
+        if (!StringUtils.equals(checkValue, body.getStr(checkKey))) {
             throw new AuthenticationException(AuthenticationErrorEnum.CODE_INVALID_ERROR);
         }
     }
@@ -153,54 +152,19 @@ public abstract class BaseAuthenticator implements Authenticator {
     }
 
     /**
-     * Gets error response.
-     *
-     * @param e the e
-     * @return the error response
-     */
-    protected Response getErrorResponse(AuthenticationException e) {
-        return getErrorResponse(e.getError(), e.getArgs());
-    }
-
-    /**
-     * Gets error response.
-     *
-     * @param error the error
-     * @param args  the args
-     * @return the error response
-     */
-    protected Response getErrorResponse(AuthenticationErrorEnum error, String... args) {
-        String message = args.length > 0 ? String.format(error.getFormatMessage(), (Object[]) args) : error.getDefaultMessage();
-        return getErrorResponse(error.getHttpStatus(), error.getCode(), message);
-    }
-
-    /**
-     * Gets error response.
-     *
-     * @param status           the status
-     * @param error            the error
-     * @param errorDescription the error description
-     * @return the error response
-     */
-    protected Response getErrorResponse(int status, String error, String errorDescription) {
-        OAuth2ErrorRepresentation errorRep = new OAuth2ErrorRepresentation(error, errorDescription);
-        return Response.status(status).entity(errorRep).type(MediaType.APPLICATION_JSON_TYPE).build();
-    }
-
-    /**
      * Validate user user model.
      *
-     * @param identifierName the identifier name
-     * @param identifier     the identifier
-     * @param optional       the optional
+     * @param key       identifier name
+     * @param value     identifier value
+     * @param userModel the user model
      * @return the user model
      */
-    protected UserModel validateUser(String identifierName, String identifier, Optional<UserModel> optional) {
-        UserModel userModel = optional.orElseThrow(() -> {
-            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, identifierName, identifier);
-        });
+    protected UserModel validateUser(String key, String value, UserModel userModel) {
+        if (ObjectUtils.isEmpty(userModel)) {
+            throw new AuthenticationException(AuthenticationErrorEnum.USER_NOT_FOUND_ERROR, key, value);
+        }
         if (!userModel.isEnabled()) {
-            throw new AuthenticationException(AuthenticationErrorEnum.USER_DISABLED_ERROR, identifierName, identifier);
+            throw new AuthenticationException(AuthenticationErrorEnum.USER_DISABLED_ERROR, key, value);
         }
         return userModel;
     }

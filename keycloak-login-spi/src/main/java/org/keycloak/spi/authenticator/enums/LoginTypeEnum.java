@@ -20,23 +20,23 @@ public enum LoginTypeEnum {
     /**
      * Email login type.
      */
-    EMAIL("email", "邮箱登录", EmailAuthenticator.class),
+    EMAIL("email", "Email code login", EmailAuthenticator.class),
     /**
      * Password login type.
      */
-    PASSWORD("password", "密码登陆", PasswordAuthenticator.class),
+    PASSWORD("password", "username password login", PasswordAuthenticator.class),
     /**
      * Phone login type.
      */
-    PHONE("phone", "手机号验证码登陆", PhoneAuthenticator.class),
+    PHONE("phone", "Phone code login", PhoneAuthenticator.class),
     /**
      * Username login type.
      */
-    USERNAME("username", "用户名登陆", UsernameAuthenticator.class),
+    USERNAME("username", "Username login", UsernameAuthenticator.class),
     /**
      * WeChat login type.
      */
-    WECHAT("wechat", "微信登陆", WechatAuthenticator.class);
+    WECHAT("wechat", "Wechat unionid login", WechatAuthenticator.class);
 
     private final String                             code;
     private final String                             name;

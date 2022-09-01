@@ -21,16 +21,16 @@ public class WechatAuthenticator extends BaseAuthenticator {
         final String unionId = super.getRequestParameter(context, WechatAuthenticatorFactory.PROPERTY_FORM_WECHAT_UNIONID);
         // 参数校验
         if (StringUtils.isEmpty(unionId)) {
-            throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "微信号不能为空");
+            throw new AuthenticationException(AuthenticationErrorEnum.PARAM_NOT_CHECKED_ERROR, "Wechat unionid must be filled!");
         }
         // 使用微信 unionId 查询用户
-        Optional<UserModel> optional = context.getSession().userStorageManager()
+        Optional<UserModel> optional = context.getSession().users()
                 .searchForUserByUserAttributeStream(
                         context.getRealm(),
                         super.getPropertyValue(context, WechatAuthenticatorFactory.PROPERTY_USER_ATTRIBUTE_WECHAT_UNIONID),
                         unionId)
                 .findFirst();
-        UserModel userModel = super.validateUser("微信号", unionId, optional);
+        UserModel userModel = super.validateUser("wechat unionid", unionId, optional.orElse(null));
         context.setUser(userModel);
         context.success();
     }

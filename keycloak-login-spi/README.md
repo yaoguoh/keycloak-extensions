@@ -21,54 +21,66 @@
 ### 一、`Docker`运行`keycloak server`
 
 ```text
-keycloak.version : 16.1.1
+keycloak.version : 20.0.0
 
-docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password jboss/keycloak
+docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password quay.io/keycloak/keycloak:20.0.0
+
+docker run --name keycloak -d --link mysql:mysql -p 8080:8080 \
+        -e KEYCLOAK_ADMIN=admin \
+        -e KEYCLOAK_ADMIN_PASSWORD=password \
+        -e KC_DB=mysql \
+        -e KC_DB_URL=jdbc:mysql://mysql:3306/keycloak \
+        -e KC_DB_USERNAME=root \
+        -e KC_DB_PASSWORD=root \
+        -e KC_HTTP_RELATIVE_PATH=auth \
+        -e KC_LOG_LEVEL=debug \
+        quay.io/keycloak/keycloak:20.0.0 start-dev
 ```
 
 ### 二、使用自定义插件
 
+> 使用shadow打完整包"keycloak-login-spi-20.0.0-all.jar"
+
 ```shell
-:keycloak-login-spi:shadowJar
-# keycloak-login-spi-16.1.1-all.jar 传到 `/opt/jboss/keycloak/standalone/deployments` 目录
-curl -s -k -L --output keycloak-login-spi-16.1.1-all.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/16.1.1/keycloak-login-spi-16.1.1-all.jar
+# keycloak-login-spi-20.0.0-all.jar 传到 `/opt/keycloak/providers` 目录 -> 然后重启pod
+curl -s -k -L --output keycloak-login-spi-20.0.0.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/20.0.0/keycloak-login-spi-20.0.0-all.jar
 ```
 
 ### 三、创建 Authentication Flow
 
 1. ***点击新增按钮 :***
-   ![add_authentication_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_authentication_1.png)
+   ![add_authentication_1](images/add_authentication_1.png)
 2. ***填写 alias 点击保存 :***
-   ![add_authentication_2](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_authentication_2.png)
+   ![add_authentication_2](images/add_authentication_2.png)
 
 ### 四、创建 client 并指定接口登录校验方式
 
 1. ***点击创建 client :***
-   ![add_client_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_client_1.png)
+   ![add_client_1](images/add_client_1.png)
 2. ***填写 client Id , 选择 openid-connect :***
-   ![add_client_2](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_client_2.png)
+   ![add_client_2](images/add_client_2.png)
 3. ***完成创建后进入编辑页，settings最下方 , 选择上一步创建的 authentication flow 并保存  :***
-   ![edit_client_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_client_1.png)
+   ![edit_client_1](images/edit_client_1.png)
 
 ### 五、用户属性修改
 
 1. ***点击修改按钮 :***
-   ![edit_user_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_user_1.png)
+   ![edit_user_1](images/edit_user_1.png)
 2. ***编辑用户属性 :***
-   ![edit_user_2](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_user_2.png)
+   ![edit_user_2](images/edit_user_2.png)
 
 ### 六、配置自定义登录流程
 
 1. ***编辑`Authentication`并添加`Execution`:***
-   ![edit_authentication_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_authentication_1.png)
-   ![add_execution_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_execution_1.png)
-   ![add_execution_2](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/add_execution_2.png)
+   ![edit_authentication_1](images/edit_authentication_1.png)
+   ![add_execution_1](images/add_execution_1.png)
+   ![add_execution_2](images/add_execution_2.png)
 2. ***设置`Execution`可用:*** 并添加配置
-   ![edit_execution_1](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_execution_1.png)
+   ![edit_execution_1](images/edit_execution_1.png)
 3. ***添加配置:***
-   ![edit_execution_2](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/edit_execution_2.png)
+   ![edit_execution_2](images/edit_execution_2.png)
 4. ***推荐完整配置:***
-   ![suggest_execution_flow](https://raw.githubusercontent.com/yaoguoh/picbed/main/keycloak-extensions/suggest_execution_flow.png)
+   ![suggest_execution_flow](images/suggest_execution_flow.png)
 
 ---
 

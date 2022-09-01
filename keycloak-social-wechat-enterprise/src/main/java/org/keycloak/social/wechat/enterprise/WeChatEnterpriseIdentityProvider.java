@@ -3,7 +3,6 @@ package org.keycloak.social.wechat.enterprise;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.broker.oidc.AbstractOAuth2IdentityProvider;
@@ -45,23 +44,23 @@ public class WeChatEnterpriseIdentityProvider extends AbstractOAuth2IdentityProv
         implements SocialIdentityProvider<WeChatEnterpriseProviderConfig> {
 
     /**
-     * [获取下级企业的access_token](https://work.weixin.qq.com/api/doc/90000/90135/91039)
+     * [获取下级企业的access_token](<a href="https://work.weixin.qq.com/api/doc/90000/90135/91039">...</a>)
      */
     public static final String TOKEN_URL                = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
     /**
-     * [构造网页授权链接](https://work.weixin.qq.com/api/doc/90000/90135/91857)
+     * [构造网页授权链接](<a href="https://work.weixin.qq.com/api/doc/90000/90135/91857">...</a>)
      */
     public static final String AUTHORIZATION_URL        = "https://open.weixin.qq.com/connect/oauth2/authorize";
     /**
-     * [构造扫码登录链接](https://work.weixin.qq.com/api/doc/90000/90135/91019)
+     * [构造扫码登录链接](<a href="https://work.weixin.qq.com/api/doc/90000/90135/91019">...</a>)
      */
     public static final String QRCODE_AUTHORIZATION_URL = "https://open.work.weixin.qq.com/wwopen/sso/qrConnect";
     /**
-     * [获取访问用户身份](https://work.weixin.qq.com/api/doc/90000/90135/91707)
+     * [获取访问用户身份](<a href="https://work.weixin.qq.com/api/doc/90000/90135/91707">...</a>)
      */
     public static final String GET_USERINFO_URL         = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
     /**
-     * [读取成员详细信息](https://work.weixin.qq.com/api/doc/90000/90135/90196)
+     * [读取成员详细信息](<a href="https://work.weixin.qq.com/api/doc/90000/90135/90196">...</a>)
      */
     public static final String GET_DETAIL_USERINFO_URL  = "https://qyapi.weixin.qq.com/cgi-bin/user/get";
 
@@ -245,8 +244,6 @@ public class WeChatEnterpriseIdentityProvider extends AbstractOAuth2IdentityProv
         protected ClientConnection clientConnection;
         @Context
         protected HttpHeaders      headers;
-        @Context
-        protected HttpRequest      httpRequest;
 
         public Endpoint(AuthenticationCallback callback, RealmModel realm, EventBuilder event) {
             this.callback = callback;

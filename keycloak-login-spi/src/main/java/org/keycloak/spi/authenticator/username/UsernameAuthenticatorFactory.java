@@ -19,7 +19,7 @@ public class UsernameAuthenticatorFactory extends BaseAuthenticatorFactory {
     /**
      * The constant PROPERTY_FORM_USERNAME.
      */
-    public static final String PROPERTY_FORM_USERNAME = "form.username";
+    public static final String PROPERTY_FORM_USERNAME = "property_form_username";
 
     @Override
     protected LoginTypeEnum getLoginType() {
@@ -28,7 +28,7 @@ public class UsernameAuthenticatorFactory extends BaseAuthenticatorFactory {
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        UsernameAuthenticator authenticator = new UsernameAuthenticator();
+        org.keycloak.spi.authenticator.username.UsernameAuthenticator authenticator = new UsernameAuthenticator();
         authenticator.setLoginType(this.getLoginType());
         authenticator.setSession(session);
         return authenticator;
@@ -39,7 +39,7 @@ public class UsernameAuthenticatorFactory extends BaseAuthenticatorFactory {
         List<ProviderConfigProperty> propertyList = Lists.newArrayList();
         // 登陆表单
         propertyList.add(new ProviderConfigProperty(
-                PROPERTY_FORM_USERNAME, "Login Form Key [username]", "登录表单键名称[用户名]", ProviderConfigProperty.STRING_TYPE, "username"
+                PROPERTY_FORM_USERNAME, "Login form key [username]", "登录表单键名称[用户名]", ProviderConfigProperty.STRING_TYPE, "username"
         ));
         return propertyList;
     }

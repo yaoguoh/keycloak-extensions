@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class WechatAuthenticatorFactory extends BaseAuthenticatorFactory {
 
-    public static final String PROPERTY_USER_ATTRIBUTE_WECHAT_UNIONID = "user.attribute.wechat.unionid";
-    public static final String PROPERTY_FORM_WECHAT_UNIONID           = "form.wechat.unionid";
+    public static final String PROPERTY_USER_ATTRIBUTE_WECHAT_UNIONID = "property_user_attribute_wechat_unionid";
+    public static final String PROPERTY_FORM_WECHAT_UNIONID           = "property_form_wechat_unionid";
 
     @Override
     protected LoginTypeEnum getLoginType() {
@@ -26,7 +26,7 @@ public class WechatAuthenticatorFactory extends BaseAuthenticatorFactory {
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        WechatAuthenticator authenticator = new WechatAuthenticator();
+        org.keycloak.spi.authenticator.wechat.WechatAuthenticator authenticator = new WechatAuthenticator();
         authenticator.setLoginType(this.getLoginType());
         authenticator.setSession(session);
         return authenticator;
@@ -37,11 +37,11 @@ public class WechatAuthenticatorFactory extends BaseAuthenticatorFactory {
         List<ProviderConfigProperty> propertyList = Lists.newArrayList();
         // 用户属性
         propertyList.add(new ProviderConfigProperty(
-                PROPERTY_USER_ATTRIBUTE_WECHAT_UNIONID, "User Attribute Key [wechat unionid]", "用户属性键名称[微信unionid]", ProviderConfigProperty.STRING_TYPE, "wechat_unionid"
+                PROPERTY_USER_ATTRIBUTE_WECHAT_UNIONID, "User attribute key [wechat unionid]", "用户属性键名称[微信unionid]", ProviderConfigProperty.STRING_TYPE, "wechat_unionid"
         ));
         // 登陆表单
         propertyList.add(new ProviderConfigProperty(
-                PROPERTY_FORM_WECHAT_UNIONID, "Login Form Key [wechat unionid]", "登录表单键名称[微信unionid]", ProviderConfigProperty.STRING_TYPE, "wechat_unionid"
+                PROPERTY_FORM_WECHAT_UNIONID, "Login form key [wechat unionid]", "登录表单键名称[微信unionid]", ProviderConfigProperty.STRING_TYPE, "wechat_unionid"
         ));
 
         return propertyList;

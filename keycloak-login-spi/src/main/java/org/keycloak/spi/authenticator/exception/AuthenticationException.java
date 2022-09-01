@@ -12,9 +12,9 @@ import org.keycloak.spi.authenticator.enums.AuthenticationErrorEnum;
 public class AuthenticationException extends RuntimeException {
 
     private final AuthenticationErrorEnum error;
-    private final String[]                args;
+    private final Object[]                args;
 
-    public AuthenticationException(AuthenticationErrorEnum error, String... args) {
+    public AuthenticationException(AuthenticationErrorEnum error, Object... args) {
         this.error = error;
         this.args = args;
     }

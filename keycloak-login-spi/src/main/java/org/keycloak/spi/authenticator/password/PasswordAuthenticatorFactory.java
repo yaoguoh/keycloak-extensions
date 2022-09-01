@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class PasswordAuthenticatorFactory extends BaseAuthenticatorFactory {
 
-    public static final String PROPERTY_FORM_USERNAME = "form.username";
-    public static final String PROPERTY_FORM_PASSWORD = "form.password";
+    public static final String PROPERTY_FORM_USERNAME = "property_form_username";
+    public static final String PROPERTY_FORM_PASSWORD = "property_form_password";
 
     @Override
     protected LoginTypeEnum getLoginType() {
@@ -26,7 +26,7 @@ public class PasswordAuthenticatorFactory extends BaseAuthenticatorFactory {
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        PasswordAuthenticator authenticator = new PasswordAuthenticator();
+        org.keycloak.spi.authenticator.password.PasswordAuthenticator authenticator = new PasswordAuthenticator();
         authenticator.setLoginType(this.getLoginType());
         authenticator.setSession(session);
         return authenticator;
@@ -37,10 +37,10 @@ public class PasswordAuthenticatorFactory extends BaseAuthenticatorFactory {
         List<ProviderConfigProperty> propertyList = Lists.newArrayList();
         // 登陆表单
         propertyList.add(new ProviderConfigProperty(
-                PROPERTY_FORM_USERNAME, "Login Form Key [username]", "登录表单键名称[用户名]", ProviderConfigProperty.STRING_TYPE, "username"
+                PROPERTY_FORM_USERNAME, "Login form key [username]", "登录表单键名称[用户名]", ProviderConfigProperty.STRING_TYPE, "username"
         ));
         propertyList.add(new ProviderConfigProperty(
-                PROPERTY_FORM_PASSWORD, "Login Form Key [password]", "登陆表单键名称[密码]", ProviderConfigProperty.STRING_TYPE, "password"
+                PROPERTY_FORM_PASSWORD, "Login form key [password]", "登陆表单键名称[密码]", ProviderConfigProperty.STRING_TYPE, "password"
         ));
 
         return propertyList;

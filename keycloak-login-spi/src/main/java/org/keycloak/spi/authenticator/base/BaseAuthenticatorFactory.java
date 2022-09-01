@@ -1,5 +1,6 @@
 package org.keycloak.spi.authenticator.base;
 
+import org.apache.commons.lang3.StringUtils;
 import org.keycloak.Config.Scope;
 import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
@@ -37,17 +38,17 @@ public abstract class BaseAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public String getDisplayType() {
-        return getLoginType().getCode() + " login authenticator";
+        return StringUtils.capitalize(getLoginType().getCode()) + " Login Authenticator";
     }
 
     @Override
     public String getReferenceCategory() {
-        return getLoginType().getCode() + " login authenticator";
+        return StringUtils.capitalize(getLoginType().getCode()) + " Login Authenticator";
     }
 
     @Override
     public String getHelpText() {
-        return getLoginType().getName() + " verifier";
+        return getLoginType().getName();
     }
 
     @Override
