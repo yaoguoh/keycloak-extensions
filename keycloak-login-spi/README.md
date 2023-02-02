@@ -21,9 +21,9 @@
 ### 一、`Docker`运行`keycloak server`
 
 ```text
-keycloak.version : 20.0.0
+keycloak.version : 20.0.3
 
-docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password quay.io/keycloak/keycloak:20.0.0
+docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=password quay.io/keycloak/keycloak:20.0.3
 
 docker run --name keycloak -d --link mysql:mysql -p 8080:8080 \
         -e KEYCLOAK_ADMIN=admin \
@@ -34,16 +34,16 @@ docker run --name keycloak -d --link mysql:mysql -p 8080:8080 \
         -e KC_DB_PASSWORD=root \
         -e KC_HTTP_RELATIVE_PATH=auth \
         -e KC_LOG_LEVEL=debug \
-        quay.io/keycloak/keycloak:20.0.0 start-dev
+        quay.io/keycloak/keycloak:20.0.3 start-dev
 ```
 
 ### 二、使用自定义插件
 
-> 使用shadow打完整包"keycloak-login-spi-20.0.0-all.jar"
+> 使用shadow打完整包"keycloak-login-spi-20.0.3-all.jar"
 
 ```shell
-# keycloak-login-spi-20.0.0-all.jar 传到 `/opt/keycloak/providers` 目录 -> 然后重启pod
-curl -s -k -L --output keycloak-login-spi-20.0.0.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/20.0.0/keycloak-login-spi-20.0.0-all.jar
+# keycloak-login-spi-20.0.3-all.jar 传到 `/opt/keycloak/providers` 目录 -> 然后重启pod
+curl -s -k -L --output keycloak-login-spi-20.0.3.jar https://github.com/yaoguoh/keycloak-extensions/releases/download/20.0.3/keycloak-login-spi-20.0.3-all.jar
 ```
 
 ### 三、创建 Authentication Flow
