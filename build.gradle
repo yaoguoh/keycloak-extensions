@@ -1,10 +1,10 @@
 buildscript {
     ext {
         ver = [
-                keycloak     : "20.0.3",
+                keycloak     : "20.0.5",
                 shadow       : "7.1.2",
-                lombok       : "1.18.22",
-                hutool       : "5.8.11",
+                lombok       : "1.18.26",
+                hutool       : "5.8.13",
                 guava        : "31.1-jre",
                 httpclient   : "5.2.1",
                 commons_lang3: "3.12.0",
@@ -38,7 +38,7 @@ allprojects {
 subprojects {
     apply plugin: "com.github.johnrengelman.shadow"
     group = 'org.keycloak'
-    version = '20.0.3'
+    version = '20.0.5'
 
     repositories {
         mavenLocal()
